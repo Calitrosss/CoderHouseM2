@@ -1,10 +1,8 @@
 // Función para obtener y validar el valor de la variable para continuidad de los cálculos
-function validaResp() {
-  let resp = prompt("Desea calcular un Indice de Masa Corporal (IMC) S/N?");
+function validaResp(msg) {
+  let resp = prompt(msg);
   while (resp !== null && resp.toUpperCase() !== "S" && resp.toUpperCase() !== "N") {
-    resp = prompt(
-      "Introduzca un valor válido.\n\nDesea calcular un Indice de Masa Corporal (IMC) S/N?"
-    );
+    resp = prompt("Introduzca un valor válido.\n\n" + msg);
   }
   return resp !== null ? resp : "";
 }
@@ -52,7 +50,7 @@ function imcFunction(alto, peso) {
 }
 
 // Variable para continuidad de ejecución de los cálculos
-let resp = validaResp();
+let resp = validaResp("Desea calcular un Indice de Masa Corporal (IMC) S/N?");
 
 // Ciclo para realizar los cálculos
 while (resp.toUpperCase() === "S") {
@@ -69,7 +67,7 @@ while (resp.toUpperCase() === "S") {
   let imcMsg = imcFunction(alto, peso);
   alert(imcMsg);
 
-  resp = validaResp();
+  resp = validaResp("Desea calcular un nuevo Indice de Masa Corporal (IMC) S/N?");
 }
 
 // Mensaje de despedida
