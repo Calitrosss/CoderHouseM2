@@ -37,13 +37,13 @@ function imcFunction(alto, peso) {
       msg = "Exceso de peso";
       break;
     case valor > 30 && valor <= 35:
-      msg = "Obeso Clase I";
+      msg = "Obesidad Clase I";
       break;
     case valor > 35 && valor <= 40:
-      msg = "Obeso Clase II";
+      msg = "Obesidad Clase II";
       break;
     case valor > 40:
-      msg = "Obeso Clase III";
+      msg = "Obesidad Clase III";
       break;
   }
   return "IMC: " + valor.toFixed(2) + " - " + msg;
