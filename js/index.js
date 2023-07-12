@@ -43,7 +43,7 @@ function imcFunction(alto, peso) {
       msg = "Obeso Clase II";
       break;
     case valor > 40:
-      msg = "Obeso Clase II";
+      msg = "Obeso Clase III";
       break;
   }
   return "IMC: " + valor.toFixed(2) + " - " + msg;
