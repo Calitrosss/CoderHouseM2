@@ -1,7 +1,10 @@
+// Variable con la fecha y hora actual de ejecución del proceso
+let fechaIMC = new Date();
+
 // Constante array para almacenar los valores de la tabla de IMC
 const tablaIMC = [];
 
-// Método para llenar la tabla de valores IMC
+// Método para llenar la tabla de valores IMC en el array
 function addIMC(valorMin, valorMax, mensaje) {
   const IMC = {
     id: tablaIMC.length,
@@ -44,34 +47,12 @@ function validaFloat(msg) {
 // Cálculo del IMC
 function imcFunction(alto, peso) {
   let valor = (peso / alto / alto) * 10000;
-  let msg = "";
-  switch (true) {
-    case valor <= 16:
-      msg = "Delgadez Severa";
-      break;
-    case valor > 16 && valor <= 17:
-      msg = "Delgadez Moderada";
-      break;
-    case valor > 17 && valor <= 18.5:
-      msg = "Delgadez Leve";
-      break;
-    case valor > 18.5 && valor <= 25:
-      msg = "Normal";
-      break;
-    case valor > 25 && valor <= 30:
-      msg = "Exceso de peso";
-      break;
-    case valor > 30 && valor <= 35:
-      msg = "Obesidad Clase I";
-      break;
-    case valor > 35 && valor <= 40:
-      msg = "Obesidad Clase II";
-      break;
-    case valor > 40:
-      msg = "Obesidad Clase III";
-      break;
-  }
-  return "IMC: " + valor.toFixed(2) + " - " + msg;
+
+  const imcObj = tablaIMC.find((n) => {
+    return valor > n.minVal && valor <= n.maxVal;
+  });
+
+  return "IMC: " + valor.toFixed(2) + " - " + imcObj.msg;
 }
 
 // Variable para continuidad de ejecución de los cálculos
@@ -89,7 +70,13 @@ while (resp.toUpperCase() === "S") {
     break;
   }
 
-  let imcMsg = imcFunction(alto, peso);
+  let imcMsg =
+    "Fecha: " +
+    fechaIMC.toLocaleDateString() +
+    " / Hora: " +
+    fechaIMC.toLocaleTimeString() +
+    "\n" +
+    imcFunction(alto, peso);
   alert(imcMsg);
 
   resp = validaResp("Desea calcular un nuevo Indice de Masa Corporal (IMC) S/N?");
