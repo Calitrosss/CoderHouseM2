@@ -1,8 +1,35 @@
+/**
+ ***********************************************************
+ ********************** VARIABLES **************************
+ ***********************************************************
+ */
+
+// #region //* VARIABLES *//
+
+const _html = document;
+const _head = _html.head;
+const _body = _html.body;
+const _title = _html.createElement("title");
+const _header = _html.createElement("header");
+const _main = _html.createElement("main");
+const _footer = _html.createElement("footer");
+let _element;
+
 // Variable con la fecha y hora actual de ejecución del proceso
 let fechaIMC = new Date();
 
 // Constante array para almacenar los valores de la tabla de IMC
 const tablaIMC = [];
+
+// #endregion //* VARIABLES *//
+
+/**
+ ***********************************************************
+ ********************** FUNCIONES **************************
+ ***********************************************************
+ */
+
+// #region //* FUNCIONES *//
 
 // Método para llenar la tabla de valores IMC en el array
 function addIMC(valorMin, valorMax, mensaje) {
@@ -55,8 +82,37 @@ function imcFunction(alto, peso) {
   return "IMC: " + valor.toFixed(2) + " - " + imcObj.msg;
 }
 
+// #endregion //* FUNCIONES *//
+
+/**
+ ***********************************************************
+ ********************** APLICACION *************************
+ ***********************************************************
+ */
+
+// #region //* APLICACION *//
+
+_title.innerText = "Calculadora BMI";
+_head.appendChild(_title);
+
+_body.prepend(_footer);
+_body.prepend(_main);
+_body.prepend(_header);
+_body.classList = "container-fluid d-flex justify-content-center";
+
+_element = _html.createElement("h1");
+_element.innerText = "Calculadora BMI";
+_element.classList = "text-center pt-5";
+_main.appendChild(_element);
+
+_element = _html.createElement("h2");
+_element.innerText = "Indice de Masa Corporal (IMC)";
+_element.classList = "text-center";
+_main.appendChild(_element);
+
 // Variable para continuidad de ejecución de los cálculos
-let resp = validaResp("Desea calcular un Indice de Masa Corporal (IMC) S/N?");
+// let resp = validaResp("Desea calcular un Indice de Masa Corporal (IMC) S/N?");
+let resp = "N";
 
 // Ciclo para realizar los cálculos
 while (resp.toUpperCase() === "S") {
@@ -83,4 +139,6 @@ while (resp.toUpperCase() === "S") {
 }
 
 // Mensaje de despedida
-alert("Hasta pronto...");
+// alert("Hasta pronto...");
+
+// #endregion //* APLICACION *//
