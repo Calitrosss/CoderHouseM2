@@ -13,6 +13,9 @@ const _title = _html.createElement("title");
 const _header = _html.createElement("header");
 const _main = _html.createElement("main");
 const _footer = _html.createElement("footer");
+const _form = _html.createElement("form");
+const _btnCalcular = _html.createElement("button");
+let _div = _html.createElement("form");
 let _element;
 
 // Variable con la fecha y hora actual de ejecución del proceso
@@ -53,22 +56,9 @@ addIMC(30, 35, "Obesidad Clase I");
 addIMC(35, 40, "Obesidad Clase II");
 addIMC(40, Infinity, "Obesidad Clase III");
 
-// Función para obtener y validar el valor de la variable para continuidad de los cálculos
-function validaResp(msg) {
-  let resp = prompt(msg);
-  while (resp !== null && resp.toUpperCase() !== "S" && resp.toUpperCase() !== "N") {
-    resp = prompt("Introduzca un valor válido.\n\n" + msg);
-  }
-  return resp !== null ? resp : "";
-}
-
-// Función para obtener y validar el valor de las variables float que se usan en los cálculos
-function validaFloat(msg) {
-  let valor = prompt(msg);
-  while (valor !== null && !parseFloat(valor)) {
-    valor = prompt("Introduzca un valor válido.\n\n" + msg);
-  }
-  return valor !== null ? valor : null;
+// Función para vaildar los valores ingresados
+function validaValor(valor) {
+  return valor > 0;
 }
 
 // Cálculo del IMC
@@ -79,18 +69,35 @@ function imcFunction(alto, peso) {
     return valor > n.minVal && valor <= n.maxVal;
   });
 
-  return "IMC: " + valor.toFixed(2) + " - " + imcObj.msg;
+  // return "IMC: " + valor.toFixed(2) + " - " + imcObj.msg;
+  return {
+    imc: valor.toFixed(2),
+    msg: imcObj.msg,
+  };
+}
+
+// Función para mostrar mensaje de error
+function showError(msg) {
+  Toastify({
+    text: msg,
+    position: "cebter",
+    duration: 3000,
+    stopOnFocus: false,
+    style: {
+      background: "#dc3545",
+    },
+  }).showToast();
 }
 
 // #endregion //* FUNCIONES *//
 
 /**
  ***********************************************************
- ********************** APLICACION *************************
+ ********************** INTERFAZ *************************
  ***********************************************************
  */
 
-// #region //* APLICACION *//
+// #region //* INTERFAZ *//
 
 _title.innerText = "Calculadora BMI";
 _head.appendChild(_title);
@@ -107,38 +114,114 @@ _main.appendChild(_element);
 
 _element = _html.createElement("h2");
 _element.innerText = "Indice de Masa Corporal (IMC)";
-_element.classList = "text-center";
+_element.classList = "text-center mb-3";
 _main.appendChild(_element);
 
-// Variable para continuidad de ejecución de los cálculos
-// let resp = validaResp("Desea calcular un Indice de Masa Corporal (IMC) S/N?");
-let resp = "N";
+_main.appendChild(_form);
 
-// Ciclo para realizar los cálculos
-while (resp.toUpperCase() === "S") {
-  let alto = validaFloat("Ingrese la altura en centímetros (cm)");
-  if (alto === null) {
-    break;
+_element = _html.createElement("label");
+_element.innerText = "Ingrese la altura en centímetros (cm)";
+_element.classList = "form-label";
+_form.appendChild(_element);
+
+_div = _html.createElement("div");
+_div.classList = "form-floating mb-3";
+_form.appendChild(_div);
+_element = _html.createElement("input");
+_element.type = "number";
+_element.classList = "form-control";
+_element.id = "inputAltura";
+_element.placeholder = "Altura (cm)";
+_div.appendChild(_element);
+_element = _html.createElement("label");
+_element.innerText = "Altura (cm)";
+_element.htmlFor = "inputAltura";
+_div.appendChild(_element);
+
+_element = _html.createElement("label");
+_element.innerText = "Ingrese el peso en kilogramos (kg)";
+_element.classList = "form-label";
+_form.appendChild(_element);
+
+_div = _html.createElement("div");
+_div.classList = "form-floating mb-3";
+_form.appendChild(_div);
+_element = _html.createElement("input");
+_element.type = "number";
+_element.classList = "form-control";
+_element.id = "inputPeso";
+_element.placeholder = "Peso (kg)";
+_div.appendChild(_element);
+_element = _html.createElement("label");
+_element.innerText = "Peso (kg)";
+_element.htmlFor = "inputPeso";
+_div.appendChild(_element);
+
+_btnCalcular.innerText = "Calcular";
+_btnCalcular.type = "submit";
+_btnCalcular.classList = "btn btn-primary";
+_form.appendChild(_btnCalcular);
+
+_element = _html.createElement("button");
+_element.innerText = "Limpiar";
+_element.type = "reset";
+_element.classList = "btn btn-secondary ms-1";
+_form.appendChild(_element);
+
+// #endregion //* INTERFAZ *//
+
+/**
+ ***********************************************************
+ ********************** APLICACION *************************
+ ***********************************************************
+ */
+
+// #region //* APLICACION *//
+
+//Evento botón Calcular
+_btnCalcular.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const inputAltura = _html.getElementById("inputAltura");
+  const alto = inputAltura.value;
+  if (!validaValor(alto)) {
+    showError("Introduzca un valor válido para la altura");
+    inputAltura.focus();
+    return;
   }
 
-  let peso = validaFloat("Ingrese el peso en kilogramos (kg)");
-  if (peso === null) {
-    break;
+  const inputPeso = _html.getElementById("inputPeso");
+  const peso = inputPeso.value;
+  if (!validaValor(peso)) {
+    showError("Introduzca un valor válido para el peso");
+    inputPeso.focus();
+    return;
   }
 
-  let imcMsg =
-    "Fecha: " +
-    fechaIMC.toLocaleDateString() +
-    " / Hora: " +
-    fechaIMC.toLocaleTimeString() +
-    "\n" +
-    imcFunction(alto, peso);
-  alert(imcMsg);
+  const imcDate = fechaIMC.toLocaleDateString();
+  const imcHour = fechaIMC.toLocaleTimeString();
+  const imcCalc = imcFunction(alto, peso);
 
-  resp = validaResp("Desea calcular un nuevo Indice de Masa Corporal (IMC) S/N?");
-}
+  const IMC = {
+    Fecha: imcDate,
+    Hora: imcHour,
+    Alto: alto,
+    Peso: peso,
+    ...imcCalc,
+  };
 
-// Mensaje de despedida
-// alert("Hasta pronto...");
+  Swal.fire({
+    titleText: `IMC: ${IMC.imc} - ${IMC.msg}`,
+    text: `Altura: ${IMC.Alto}cm - Peso: ${IMC.Peso}kg`,
+    imageUrl: "https://unsplash.it/400/200",
+    imageWidth: 400,
+    imageHeight: 200,
+    imageAlt: "Custom image",
+    footer: `Fecha: ${IMC.Fecha} - Hora: ${IMC.Hora}`,
+  });
+
+  inputAltura.value = "";
+  inputPeso.value = "";
+});
 
 // #endregion //* APLICACION *//
