@@ -15,6 +15,7 @@ const _main = _html.createElement("main");
 const _footer = _html.createElement("footer");
 const _form = _html.createElement("form");
 const _btnCalcular = _html.createElement("button");
+const _btnHistorial = _html.createElement("button");
 let _div = _html.createElement("form");
 let _element;
 
@@ -23,6 +24,9 @@ let fechaIMC = new Date();
 
 // Constante array para almacenar los valores de la tabla de IMC
 const tablaIMC = [];
+
+// Constante para almacenar la clave del local storage para el último resultado del cálculo final
+const imcStorageKey = "lastIMC";
 
 // #endregion //* VARIABLES *//
 
@@ -69,7 +73,6 @@ function imcFunction(alto, peso) {
     return valor > n.minVal && valor <= n.maxVal;
   });
 
-  // return "IMC: " + valor.toFixed(2) + " - " + imcObj.msg;
   return {
     imc: valor.toFixed(2),
     msg: imcObj.msg,
@@ -80,13 +83,26 @@ function imcFunction(alto, peso) {
 function showError(msg) {
   Toastify({
     text: msg,
-    position: "cebter",
-    duration: 3000,
+    position: "center",
+    duration: 2500,
     stopOnFocus: false,
     style: {
       background: "#dc3545",
     },
   }).showToast();
+}
+
+// Función para mostrar eel resultado del cálculo final
+function showIMC({ fecha, hora, alto, peso, imc, msg }) {
+  Swal.fire({
+    titleText: `IMC: ${imc} - ${msg}`,
+    text: `Altura: ${alto}cm - Peso: ${peso}kg`,
+    imageUrl: "https://unsplash.it/400/200",
+    imageWidth: 400,
+    imageHeight: 200,
+    imageAlt: "Custom image",
+    footer: `Fecha: ${fecha} - Hora: ${hora}`,
+  });
 }
 
 // #endregion //* FUNCIONES *//
@@ -157,16 +173,22 @@ _element.innerText = "Peso (kg)";
 _element.htmlFor = "inputPeso";
 _div.appendChild(_element);
 
+_div = _html.createElement("div");
+_div.classList = "d-flex flex-wrap justify-content-evenly mb-3 gap-1";
+_form.appendChild(_div);
 _btnCalcular.innerText = "Calcular";
 _btnCalcular.type = "submit";
 _btnCalcular.classList = "btn btn-primary";
-_form.appendChild(_btnCalcular);
-
+_div.appendChild(_btnCalcular);
 _element = _html.createElement("button");
 _element.innerText = "Limpiar";
 _element.type = "reset";
-_element.classList = "btn btn-secondary ms-1";
-_form.appendChild(_element);
+_element.classList = "btn btn-secondary";
+_div.appendChild(_element);
+_btnHistorial.innerText = "Último";
+_btnHistorial.type = "button";
+_btnHistorial.classList = "btn btn-outline-light";
+_div.appendChild(_btnHistorial);
 
 // #endregion //* INTERFAZ *//
 
@@ -198,30 +220,27 @@ _btnCalcular.addEventListener("click", (e) => {
     return;
   }
 
-  const imcDate = fechaIMC.toLocaleDateString();
-  const imcHour = fechaIMC.toLocaleTimeString();
-  const imcCalc = imcFunction(alto, peso);
-
   const IMC = {
-    Fecha: imcDate,
-    Hora: imcHour,
-    Alto: alto,
-    Peso: peso,
-    ...imcCalc,
+    fecha: fechaIMC.toLocaleDateString(),
+    hora: fechaIMC.toLocaleTimeString(),
+    alto: alto,
+    peso: peso,
+    ...imcFunction(alto, peso),
   };
 
-  Swal.fire({
-    titleText: `IMC: ${IMC.imc} - ${IMC.msg}`,
-    text: `Altura: ${IMC.Alto}cm - Peso: ${IMC.Peso}kg`,
-    imageUrl: "https://unsplash.it/400/200",
-    imageWidth: 400,
-    imageHeight: 200,
-    imageAlt: "Custom image",
-    footer: `Fecha: ${IMC.Fecha} - Hora: ${IMC.Hora}`,
-  });
+  showIMC(IMC);
+
+  localStorage.removeItem(imcStorageKey);
+  localStorage.setItem(imcStorageKey, JSON.stringify(IMC));
 
   inputAltura.value = "";
   inputPeso.value = "";
+});
+
+// Evento botón Último
+_btnHistorial.addEventListener("click", () => {
+  const IMC = JSON.parse(localStorage.getItem(imcStorageKey));
+  IMC ? showIMC(IMC) : showError("No hay datos almacenados");
 });
 
 // #endregion //* APLICACION *//
