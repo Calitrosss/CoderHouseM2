@@ -1,58 +1,58 @@
 [
   {
     "id": 0,
-    "minVal": "Infinity",
+    "minVal": "-Infinity",
     "maxVal": 16,
     "msg": "Delgadez Severa",
-    "img": ""
+    "img": "../img/imc0.png"
   },
   {
     "id": 1,
     "minVal": 16,
     "maxVal": 17,
     "msg": "Delgadez Moderada",
-    "img": ""
+    "img": "../img/imc1.png"
   },
   {
     "id": 2,
     "minVal": 17,
     "maxVal": 18.5,
     "msg": "Delgadez Leve",
-    "img": ""
+    "img": "../img/imc2.png"
   },
   {
     "id": 3,
     "minVal": 18.5,
     "maxVal": 25,
     "msg": "Normal",
-    "img": ""
+    "img": "../img/imc3.png"
   },
   {
     "id": 4,
     "minVal": 25,
     "maxVal": 30,
     "msg": "Exceso de peso",
-    "img": ""
+    "img": "../img/imc4.png"
   },
   {
     "id": 5,
     "minVal": 30,
     "maxVal": 35,
     "msg": "Obesidad Clase I",
-    "img": ""
+    "img": "../img/imc5.png"
   },
   {
     "id": 6,
     "minVal": 35,
     "maxVal": 40,
     "msg": "Obesidad Clase II",
-    "img": ""
+    "img": "../img/imc6.png"
   },
   {
     "id": 7,
     "minVal": 40,
     "maxVal": "Infinity",
     "msg": "Obesidad Clase III",
-    "img": ""
+    "img": "../img/imc7.png"
   }
 ]

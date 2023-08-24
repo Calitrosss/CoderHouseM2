@@ -39,26 +39,27 @@ const imcStorageKey = "lastIMC";
 // #region //* FUNCIONES *//
 
 // Método para llenar la tabla de valores IMC en el array
-function addIMC(valorMin, valorMax, mensaje) {
+function addIMC(valorMin, valorMax, mensaje, imagen) {
   const IMC = {
     id: tablaIMC.length,
     minVal: valorMin,
     maxVal: valorMax,
     msg: mensaje,
+    img: imagen,
   };
 
   tablaIMC.push(IMC);
 }
 
 //Se llena la tabla de IMC con los valores correspondientes
-addIMC(-Infinity, 16, "Delgadez Severa");
-addIMC(16, 17, "Delgadez Moderada");
-addIMC(17, 18.5, "Delgadez Leve");
-addIMC(18.5, 25, "Normal");
-addIMC(25, 30, "Exceso de peso");
-addIMC(30, 35, "Obesidad Clase I");
-addIMC(35, 40, "Obesidad Clase II");
-addIMC(40, Infinity, "Obesidad Clase III");
+addIMC(-Infinity, 16, "Delgadez Severa", "../img/imc0.png");
+addIMC(16, 17, "Delgadez Moderada", "../img/imc1.png");
+addIMC(17, 18.5, "Delgadez Leve", "../img/imc2.png");
+addIMC(18.5, 25, "Normal", "../img/imc3.png");
+addIMC(25, 30, "Exceso de peso", "../img/imc4.png");
+addIMC(30, 35, "Obesidad Clase I", "../img/imc5.png");
+addIMC(35, 40, "Obesidad Clase II", "../img/imc6.png");
+addIMC(40, Infinity, "Obesidad Clase III", "../img/imc7.png");
 
 // Función para vaildar los valores ingresados
 function validaValor(valor) {
@@ -76,6 +77,7 @@ function imcFunction(alto, peso) {
   return {
     imc: valor.toFixed(2),
     msg: imcObj.msg,
+    img: imcObj.img,
   };
 }
 
@@ -93,14 +95,17 @@ function showError(msg) {
 }
 
 // Función para mostrar eel resultado del cálculo final
-function showIMC({ fecha, hora, alto, peso, imc, msg }) {
+function showIMC({ fecha, hora, alto, peso, imc, msg, img }) {
   Swal.fire({
     titleText: `IMC: ${imc} - ${msg}`,
-    text: `Altura: ${alto}cm - Peso: ${peso}kg`,
+    html: `
+    <div class="swal2-html-container" id="swal2-html-container" style="display: block;">Altura: ${alto}cm - Peso: ${peso}kg
+    </div><img src="${img}">
+    `,
     imageUrl: "https://unsplash.it/400/200",
     imageWidth: 400,
     imageHeight: 200,
-    imageAlt: "Custom image",
+    imageAlt: "Calculadora BMI",
     footer: `Fecha: ${fecha} - Hora: ${hora}`,
   });
 }
