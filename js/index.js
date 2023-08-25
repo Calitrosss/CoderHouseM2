@@ -16,7 +16,7 @@ const _footer = _html.createElement("footer");
 const _form = _html.createElement("form");
 const _btnCalcular = _html.createElement("button");
 const _btnHistorial = _html.createElement("button");
-let _div = _html.createElement("form");
+let _div;
 let _element;
 
 // Variable con la fecha y hora actual de ejecución del proceso
