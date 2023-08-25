@@ -35,23 +35,39 @@ const imcStorageKey = "lastIMC";
 
 // #region //* FUNCIONES *//
 
-// Función para obtener los datos de la tabla IMC desde un archivo json
+// Función/Promesa para obtener los datos de la tabla IMC desde un archivo json
 function pedirTablaIMC() {
   return fetch("../data/data.json")
-    .then((response) => response.json())
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        throw new Error(
+          `No se pudo establecer la conexión (${response.status} - ${response.statusText})`
+        );
+      }
+    })
     .then((data) => {
-      const tablaIMC = data.map((item) => {
-        const minVal = item.minVal === "-Infinity" ? -Infinity : parseFloat(item.minVal);
-        const maxVal = item.maxVal === "Infinity" ? Infinity : parseFloat(item.maxVal);
+      if (data && data.length > 0) {
+        const tablaIMC = data.map((item) => {
+          const minVal = item.minVal === "-Infinity" ? -Infinity : parseFloat(item.minVal);
+          const maxVal = item.maxVal === "Infinity" ? Infinity : parseFloat(item.maxVal);
 
-        return {
-          ...item,
-          minVal,
-          maxVal,
-        };
-      });
+          return {
+            ...item,
+            minVal,
+            maxVal,
+          };
+        });
 
-      return tablaIMC;
+        return tablaIMC;
+      } else {
+        throw new Error("Tabla IMC vacía");
+      }
+    })
+    .catch((error) => {
+      showError(error);
+      return [];
     });
 }
 
@@ -227,24 +243,26 @@ _btnCalcular.addEventListener("click", (e) => {
 
   pedirTablaIMC()
     .then((datos) => {
-      const IMC = {
-        fecha: fechaIMC.toLocaleDateString(),
-        hora: fechaIMC.toLocaleTimeString(),
-        alto: alto,
-        peso: peso,
-        ...imcFunction(alto, peso, datos),
-      };
+      if (datos.length > 0) {
+        const IMC = {
+          fecha: fechaIMC.toLocaleDateString(),
+          hora: fechaIMC.toLocaleTimeString(),
+          alto: alto,
+          peso: peso,
+          ...imcFunction(alto, peso, datos),
+        };
 
-      showIMC(IMC);
+        showIMC(IMC);
 
-      localStorage.removeItem(imcStorageKey);
-      localStorage.setItem(imcStorageKey, JSON.stringify(IMC));
+        localStorage.removeItem(imcStorageKey);
+        localStorage.setItem(imcStorageKey, JSON.stringify(IMC));
 
-      inputAltura.value = "";
-      inputPeso.value = "";
+        inputAltura.value = "";
+        inputPeso.value = "";
+      }
     })
     .catch((error) => {
-      showError("No se logró conectar con la base de datos: \n" + error);
+      showError(error);
     });
 });
 
