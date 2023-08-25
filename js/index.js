@@ -22,9 +22,6 @@ let _element;
 // Variable con la fecha y hora actual de ejecución del proceso
 let fechaIMC = new Date();
 
-// Constante array para almacenar los valores de la tabla de IMC
-const tablaIMC = [];
-
 // Constante para almacenar la clave del local storage para el último resultado del cálculo final
 const imcStorageKey = "lastIMC";
 
@@ -38,28 +35,25 @@ const imcStorageKey = "lastIMC";
 
 // #region //* FUNCIONES *//
 
-// Método para llenar la tabla de valores IMC en el array
-function addIMC(valorMin, valorMax, mensaje, imagen) {
-  const IMC = {
-    id: tablaIMC.length,
-    minVal: valorMin,
-    maxVal: valorMax,
-    msg: mensaje,
-    img: imagen,
-  };
+// Función para obtener los datos de la tabla IMC desde un archivo json
+function pedirTablaIMC() {
+  return fetch("../data/data.json")
+    .then((response) => response.json())
+    .then((data) => {
+      const tablaIMC = data.map((item) => {
+        const minVal = item.minVal === "-Infinity" ? -Infinity : parseFloat(item.minVal);
+        const maxVal = item.maxVal === "Infinity" ? Infinity : parseFloat(item.maxVal);
 
-  tablaIMC.push(IMC);
+        return {
+          ...item,
+          minVal,
+          maxVal,
+        };
+      });
+
+      return tablaIMC;
+    });
 }
-
-//Se llena la tabla de IMC con los valores correspondientes
-addIMC(-Infinity, 16, "Delgadez Severa", "../img/imc0.png");
-addIMC(16, 17, "Delgadez Moderada", "../img/imc1.png");
-addIMC(17, 18.5, "Delgadez Leve", "../img/imc2.png");
-addIMC(18.5, 25, "Normal", "../img/imc3.png");
-addIMC(25, 30, "Exceso de peso", "../img/imc4.png");
-addIMC(30, 35, "Obesidad Clase I", "../img/imc5.png");
-addIMC(35, 40, "Obesidad Clase II", "../img/imc6.png");
-addIMC(40, Infinity, "Obesidad Clase III", "../img/imc7.png");
 
 // Función para vaildar los valores ingresados
 function validaValor(valor) {
@@ -67,7 +61,7 @@ function validaValor(valor) {
 }
 
 // Cálculo del IMC
-function imcFunction(alto, peso) {
+function imcFunction(alto, peso, tablaIMC) {
   let valor = (peso / alto / alto) * 10000;
 
   const imcObj = tablaIMC.find((n) => {
@@ -119,6 +113,12 @@ function showIMC({ fecha, hora, alto, peso, imc, msg, img }) {
  */
 
 // #region //* INTERFAZ *//
+
+_element = _html.createElement("link");
+_element.rel = "shortcut icon";
+_element.href = "./img/imc.png";
+_element.type = "image/x-icon";
+_head.appendChild(_element);
 
 _title.innerText = "Calculadora BMI";
 _head.appendChild(_title);
@@ -225,21 +225,27 @@ _btnCalcular.addEventListener("click", (e) => {
     return;
   }
 
-  const IMC = {
-    fecha: fechaIMC.toLocaleDateString(),
-    hora: fechaIMC.toLocaleTimeString(),
-    alto: alto,
-    peso: peso,
-    ...imcFunction(alto, peso),
-  };
+  pedirTablaIMC()
+    .then((datos) => {
+      const IMC = {
+        fecha: fechaIMC.toLocaleDateString(),
+        hora: fechaIMC.toLocaleTimeString(),
+        alto: alto,
+        peso: peso,
+        ...imcFunction(alto, peso, datos),
+      };
 
-  showIMC(IMC);
+      showIMC(IMC);
 
-  localStorage.removeItem(imcStorageKey);
-  localStorage.setItem(imcStorageKey, JSON.stringify(IMC));
+      localStorage.removeItem(imcStorageKey);
+      localStorage.setItem(imcStorageKey, JSON.stringify(IMC));
 
-  inputAltura.value = "";
-  inputPeso.value = "";
+      inputAltura.value = "";
+      inputPeso.value = "";
+    })
+    .catch((error) => {
+      showError("No se logró conectar con la base de datos: \n" + error);
+    });
 });
 
 // Evento botón Último
