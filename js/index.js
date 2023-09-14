@@ -1,5 +1,74 @@
 /**
  ***********************************************************
+ ********************** CONSTANTES **************************
+ ***********************************************************
+ */
+
+// #region //* CONSTANTES *//
+
+const dataWired = [
+  {
+    id: 0,
+    minVal: "-Infinity",
+    maxVal: 16,
+    msg: "Delgadez Severa",
+    img: "../img/imc0.png",
+  },
+  {
+    id: 1,
+    minVal: 16,
+    maxVal: 17,
+    msg: "Delgadez Moderada",
+    img: "../img/imc1.png",
+  },
+  {
+    id: 2,
+    minVal: 17,
+    maxVal: 18.5,
+    msg: "Delgadez Leve",
+    img: "../img/imc2.png",
+  },
+  {
+    id: 3,
+    minVal: 18.5,
+    maxVal: 25,
+    msg: "Normal",
+    img: "../img/imc3.png",
+  },
+  {
+    id: 4,
+    minVal: 25,
+    maxVal: 30,
+    msg: "Exceso de peso",
+    img: "../img/imc4.png",
+  },
+  {
+    id: 5,
+    minVal: 30,
+    maxVal: 35,
+    msg: "Obesidad Clase I",
+    img: "../img/imc5.png",
+  },
+  {
+    id: 6,
+    minVal: 35,
+    maxVal: 40,
+    msg: "Obesidad Clase II",
+    img: "../img/imc6.png",
+  },
+  {
+    id: 7,
+    minVal: 40,
+    maxVal: "Infinity",
+    msg: "Obesidad Clase III",
+    img: "../img/imc7.png",
+  },
+];
+
+// #endregion //* VARIABLES *//
+
+/**
+ ***********************************************************
  ********************** VARIABLES **************************
  ***********************************************************
  */
@@ -35,6 +104,53 @@ const imcStorageKey = "lastIMC";
 
 // #region //* FUNCIONES *//
 
+// Función/Promesa para obtener los datos de la tabla IMC desde una constante
+// function pedirTablaWiredIMC() {
+//   return new Promise((res, rej) => {
+//     if (dataWired) {
+//       const tablaIMC = dataWired.map((item) => {
+//         const minVal = item.minVal === "-Infinity" ? -Infinity : parseFloat(item.minVal);
+//         const maxVal = item.maxVal === "Infinity" ? Infinity : parseFloat(item.maxVal);
+
+//         return {
+//           ...item,
+//           minVal,
+//           maxVal,
+//         };
+//       });
+
+//       res(tablaIMC);
+//     } else {
+//       const err = new Error("Data IMC inválida");
+//       rej(err);
+//     }
+//   });
+// }
+
+// Función/Promesa para obtener los datos de la tabla IMC desde una constante
+// usando bloque try/catch
+// function pedirTablaWiredIMC() {
+//   return new Promise((res, rej) => {
+//     try {
+//       const tablaIMC = dataWired.map((item) => {
+//         const minVal = item.minVal === "-Infinity" ? -Infinity : parseFloat(item.minVal);
+//         const maxVal = item.maxVal === "Infinity" ? Infinity : parseFloat(item.maxVal);
+
+//         return {
+//           ...item,
+//           minVal,
+//           maxVal,
+//         };
+//       });
+
+//       res(tablaIMC);
+//     } catch (error) {
+//       const err = new Error(`Data IMC inválida: ${error}`);
+//       rej(err);
+//     }
+//   });
+// }
+
 // Función/Promesa para obtener los datos de la tabla IMC desde un archivo json
 function pedirTablaIMC() {
   return fetch("../data/data.json")
@@ -67,6 +183,22 @@ function pedirTablaIMC() {
     })
     .catch((error) => {
       showError(error);
+
+      if (dataWired) {
+        const tablaIMC = dataWired.map((item) => {
+          const minVal = item.minVal === "-Infinity" ? -Infinity : parseFloat(item.minVal);
+          const maxVal = item.maxVal === "Infinity" ? Infinity : parseFloat(item.maxVal);
+
+          return {
+            ...item,
+            minVal,
+            maxVal,
+          };
+        });
+
+        return tablaIMC;
+      }
+
       return [];
     });
 }
@@ -241,6 +373,32 @@ _btnCalcular.addEventListener("click", (e) => {
     return;
   }
 
+  // Busca la data sólo en la constante
+  // pedirTablaWiredIMC()
+  //   .then((datos) => {
+  //     if (datos.length > 0) {
+  //       const IMC = {
+  //         fecha: fechaIMC.toLocaleDateString(),
+  //         hora: fechaIMC.toLocaleTimeString(),
+  //         alto: alto,
+  //         peso: peso,
+  //         ...imcFunction(alto, peso, datos),
+  //       };
+
+  //       showIMC(IMC);
+
+  //       localStorage.removeItem(imcStorageKey);
+  //       localStorage.setItem(imcStorageKey, JSON.stringify(IMC));
+
+  //       inputAltura.value = "";
+  //       inputPeso.value = "";
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     showError(error);
+  //   });
+
+  // Busca la data primero en el archivo y si no la consigue usa la constante
   pedirTablaIMC()
     .then((datos) => {
       if (datos.length > 0) {
@@ -259,6 +417,8 @@ _btnCalcular.addEventListener("click", (e) => {
 
         inputAltura.value = "";
         inputPeso.value = "";
+
+        result = true;
       }
     })
     .catch((error) => {
